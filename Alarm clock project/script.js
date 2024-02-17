@@ -12,7 +12,7 @@ let alarmTimeout = null;
 
 
 //for populating options in select tag for hours 
-for(let x = 12 ; x >= 1 ; x--)
+for(let x = 12 ; x >= 0 ; x--)
 {
     if(x<=9)
     {
@@ -25,7 +25,7 @@ for(let x = 12 ; x >= 1 ; x--)
 }
 
 //for populating options in select tag for minutes
-for(let x = 59 ; x >= 1 ; x--)
+for(let x = 59 ; x >= 0 ; x--)
 {
     if(x<=9)
     {
@@ -53,16 +53,39 @@ for(let x = 0 ; x <2; x++)
 let isAlarm , timeSet;
 
 
-//for setting current time and updating every second. alarmTimeout for getting id so that it can be cleared
+
+
+// Function to display current time in 12-hour format
+function displayTime() {
+    const now = new Date();
+    let hour = now.getHours();
+    const minute = now.getMinutes();
+    const second = now.getSeconds();
+    const amPm = hour >= 12 ? 'PM' : 'AM';
+  
+    // Convert the hour to 12-hour format
+    hour = hour % 12 || 12;
+  
+   
+    digital_clock.textContent = `${hour}:${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second} ${amPm}`;
+  }
+  
+  // Function to update the clock every second
+  setInterval(displayTime, 1000);
+  
+
+
+
+//  alarmTimeout for getting id so that it can be cleared
  alarmTimeout = setInterval(()=>{
     let date = new Date();
-    digital_clock.innerHTML = date.toLocaleTimeString();
+    // digital_clock.innerHTML = date.toLocaleTimeString();
 
     //getting current hour
     let h = date.getHours();
     //as getHours gives value of 0 to 23 hr. so we are changing to our variant am/pm 
     let ampm = "AM";
-    if(h>=12){
+    if(h>12){
         h = h - 12;
         ampm = "PM";
     }
@@ -80,33 +103,16 @@ let isAlarm , timeSet;
         m = `0${m}`;
     }
 
-   
-  
-    if(isAlarm === `${h}:${m}${ampm}`){
+   for(i=0;i<alarmList.length ;i++){
+
+    if(alarmList[i] === `${h}:${m}${ampm}`){
         ringtone.play();
+        
      }
 
-},1000);
+   }
+ },1000);
 
-//setting an alarm
-set_alarm.addEventListener('click', () => {
-    let time = `${selectData[0].value}:${selectData[1].value}${selectData[2].value}`;
-    isAlarm = time;
-   
-//add new alarm to alarmList
-if(!alarmList.includes(isAlarm)){
-    alarmList.push(isAlarm);
- 
-    viewAlarmList(isAlarm);
-   
-} 
-else{
-    alert(`Alarm for ${isAlarm} already set.`);
-}
-
-
-
-});
 
 // Stop an alarm 
 function clearAlarm(){
@@ -114,10 +120,12 @@ function clearAlarm(){
     if (alarmTimeout) {
         clearTimeout(alarmTimeout);
         alert('Alarm cleared');
+        
+        
     }
 }
 
-//delete an alarm on clicking delete alarm button from array
+//delete an alarm on clicking delete alarm button from array(not working )
 list.addEventListener('click', (e) => {
     if(e.target.classList.contains("clear_alarm"))
     {
@@ -151,3 +159,26 @@ function viewAlarmList(time){
 
 
 
+//setting an alarm
+set_alarm.addEventListener('click', () => {
+    let time = `${selectData[0].value}:${selectData[1].value}${selectData[2].value}`;
+    isAlarm = time;
+  
+   
+//add new alarm to alarmList
+
+
+
+if(!alarmList.includes(isAlarm)){
+    alarmList.push(isAlarm);
+ 
+    viewAlarmList(isAlarm);
+   
+} 
+else{
+    alert(`Alarm for ${isAlarm} already set.`);
+}
+
+
+
+});
